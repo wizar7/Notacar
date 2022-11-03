@@ -36,7 +36,16 @@ int pinAstateCurrent = LOW;                // Current state of Pin A
 int pinAStateLast = pinAstateCurrent;      // Last read value of Pin A
 int number=0; //initial the count 
 
+int sensorPin = A0;    // select the input pin for the potentiometer
+int ledPin = 13;      // select the pin for the LED
+int sensorValue = 0;  // variable to store the value coming from the sensor
+
 void setup() {
+
+ // declare the ledPin as an OUTPUT:
+  
+  pinMode(ledPin, OUTPUT);
+
   Serial.begin (9600);                     // Initialise the serial monitor
 
   pinMode (switchPin, INPUT_PULLUP);       // Enable the switchPin as input with a PULLUP resistor
