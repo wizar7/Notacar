@@ -30,6 +30,11 @@
 int switchPin = 12;                        // button pin
 int switchState = HIGH;                    // button value
 
+static const int buzzerPin = 13;                          // buzzer pin
+int buzzerHold=0;                                //
+
+int vabriPin=2;                  //vabriation pin
+
 int sensorPin = A0;    // select the input pin for the potentiometer
 int sensorValue = 0;  // variable to store the value coming from the sensor
 
@@ -51,10 +56,11 @@ void setup() {
   int sensorPin = A0;    // select the input pin for the potentiometer
   int ledPin = 13;      // select the pin for the LED
   int sensorValue = 0;  // variable to store the value coming from the sensor
-
- // declare the ledPin as an OUTPUT:
-  
+ 
+ // declare the ledPin, buzzerPin as an OUTPUT:
+  pinMode(buzzerPin,OUTPUT);
   pinMode(ledPin, OUTPUT);
+  pinMode(vabriPin,OUTPUT);
 
   Serial.begin (9600);                     // Initialise the serial monitor
 
@@ -66,7 +72,6 @@ void setup() {
 }
 
 void loop() {
-
    // SLIDER
   sensorValue = analogRead(sensorPin);
   if(sensorValue<256){
@@ -174,7 +179,24 @@ void loop() {
       }
   else{Serial.print("D:");            // Print on screen
       Serial.println(numberD); 
-      }    
+      }  
+
+  digitalWrite(vabriPin,HIGH);
+  delay(50);
   
-  
+  //buzzer:
+  if(sensorValue<125){
+    beep();
+    
+  }   
+}
+
+void beep(){
+  //if(sensorValue==buzzerHold)
+  digitalWrite(vabriPin,HIGH);
+  delay(50);
+  digitalWrite(vabriPin,LOW);
+  delay(50);
+  tone(buzzerPin,196,200);//give a tone to the buzzerPin, at 960Hz for 200ms.
+  buzzerHold=sensorValue;   
 }
