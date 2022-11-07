@@ -48,6 +48,7 @@ int numberC=0; //initial the count
 int numberD=0; //initial the count 
 
 char sliderArea;
+int pressCount=0;
 
 
 
@@ -95,7 +96,9 @@ void loop() {
   switchState = digitalRead(switchPin);    // Read the digital value of the switch (LOW/HIGH)
   // If the switch is pressed (LOW), print message
   if (switchState == LOW) {
-      Serial.println("Switch pressed");
+      Serial.print("Switch pressed:");
+      pressCount++;
+      Serial.println(pressCount);
   }
   
 
@@ -168,8 +171,9 @@ void loop() {
   
   pinAStateLast = pinAstateCurrent;        // Store the latest read value in the currect state variable
 
-  if(sliderArea=='A'){Serial.print("A:");            // Print on screen
-      Serial.println(numberA); 
+  if(sliderArea=='A'){
+    //Serial.print("A:");            // Print on screen
+      //Serial.println(numberA); 
       }
   else if(sliderArea=='B'){Serial.print("B:");            // Print on screen
       Serial.println(numberB); 
@@ -181,22 +185,25 @@ void loop() {
       Serial.println(numberD); 
       }  
 
-  digitalWrite(vabriPin,HIGH);
-  delay(50);
+  
   
   //buzzer:
-  if(sensorValue<125){
-    beep();
+  if((sensorValue>120&&sensorValue<130)|| (sensorValue>380 && sensorValue<390 ) || (sensorValue>635 && sensorValue<645) || (sensorValue>890 && sensorValue<900)){
+    beep(); 
     
-  }   
+  }
 }
 
+int running=0;
 void beep(){
   //if(sensorValue==buzzerHold)
   digitalWrite(vabriPin,HIGH);
+  digitalWrite(buzzerPin,HIGH);
+  tone(buzzerPin,196,200);//give a tone to the buzzerPin, at 960Hz for 20ms.
   delay(50);
   digitalWrite(vabriPin,LOW);
+  digitalWrite(buzzerPin,LOW);
   delay(50);
-  tone(buzzerPin,196,200);//give a tone to the buzzerPin, at 960Hz for 200ms.
-  buzzerHold=sensorValue;   
+  
+  //buzzerHold=sensorValue;   
 }
