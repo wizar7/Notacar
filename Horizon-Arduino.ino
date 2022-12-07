@@ -46,6 +46,10 @@ float sharpvalue[20];
 int i=0;
 float c ;
 float sum ;
+int sharpState=0;
+int sharpChange=0;
+int mappingvaluetosharp;
+
 
 //for communication for protopie
 String message="1";                        // serialprint for position on slider
@@ -81,16 +85,20 @@ void setup() {
 }
 
 void loop() {
+
   // SLIDER
   sensorValue = analogRead(sensorPin);
+  //Serial.println(sensorValue);
   if(sensorValue<341){
     sliderArea=1;
     }
   else if(sensorValue>=341 && sensorValue<682){
     sliderArea=2;
+    
     }
   else{
     sliderArea=3;
+    
     }
 
   // BUTTON
@@ -126,10 +134,7 @@ void loop() {
       }
       //Serial print for protopie
       message2="rotation||"+String(rotateStatus);
-      if(message2!=temp2) { 
         Serial.println(message2);
-        temp2=message2;
-        }
     }
   }  
 
@@ -144,10 +149,7 @@ void loop() {
       }
       //Serial print for protopie
       message2="rotation||"+String(rotateStatus);
-      if(message2!=temp2) { 
         Serial.println(message2);
-        temp2=message2;
-      }
     }
   }
 
@@ -160,12 +162,6 @@ void loop() {
       numberC--;
       rotateStatus='1';
       }
-      //Serial print for protopie
-      message2="rotation||"+String(rotateStatus);
-      if(message2!=temp2) { 
-       Serial.println(message2);
-        temp2=message2;
-        }
     }
   }
   pinAStateLast = pinAstateCurrent;        // Store the latest read value in the currect state variable  
@@ -197,16 +193,29 @@ void loop() {
   if ( VoRaw > b ) {
     dist = a / (VoRaw - b);
   }
-  //printFValue("Distance", dist, "mm", true);
+  //Serial.println(dist);
 
-  //motor control, not well developmed for now
-  if(dist>map(sensorValue,0,1024,16,125)){
-    directionControl();
-    delay(1000);
-   }else{
-    directionControl();
-    delay(1000);
+  if(dist>4 && dist<9){
+    sharpState=1;                              //in the area of sharp working
+  }else{
+    sharpState=0;
   }
+
+  if (sharpState == 0 ) {
+      if(sharpChange==1){
+        //Serial.println("motor activated!");
+        directionControl();
+        /*mappingvaluetosharp=(sensorValue,0,1024,8,4);
+        if (mappingvaluetosharp<VoRaw){
+          directionControl() ;
+        }else {
+          directionControl() ;
+        }*/
+      }
+  }
+  sharpChange=sharpState;
+  
+
 
   /*
   //communicate with Unity by Serialprint
@@ -275,38 +284,14 @@ float sharpValue(){
 // This function lets you control spinning direction of motors
 void directionControl() {
 	// Turn on motor
-	digitalWrite(in1, HIGH);
-	digitalWrite(in2, LOW);
-	delay(2000);
-	Serial.println("aaaa");
-
+    digitalWrite(in1, HIGH);
+	  digitalWrite(in2, LOW);
+	  delay(500);
 	// Now change motor directions
-	digitalWrite(in1, LOW);
-	digitalWrite(in2, HIGH);
-	delay(2000);
-	
+    digitalWrite(in1, LOW);
+	  digitalWrite(in2, HIGH);
+	  delay(500);
 	// Turn off motors
 	digitalWrite(in1, LOW);
 	digitalWrite(in2, LOW);
-}
-
-// Helper functions to print a data value to the serial monitor.
-void printValue(String text, unsigned int value, bool isLast = false) {
-  Serial.print(text);
-  Serial.print("=");
-  Serial.print(value);
-  if (!isLast) {
-    Serial.print(", ");
-  }
-}
-
-// Helper functions to print a data value to the serial monitor.
-void printFValue(String text, float value, String units, bool isLast = false) {
-  Serial.print(text);
-  Serial.print("=");
-  Serial.print(value, 3);
-  Serial.print(units);
-  if (!isLast) {
-    Serial.print(", ");
-  }
 }
